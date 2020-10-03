@@ -1,0 +1,66 @@
+
+常用筛选器运算符
+
+下面是在 filter() ：
+
+    equals ：：
+    query.filter(User.name == 'ed')
+
+
+    not equals ：：
+    query.filter(User.name != 'ed')
+
+
+    LIKE ：：
+    query.filter(User.name.like('%ed%'))
+    注解
+    ColumnOperators.like() 呈现like运算符，它在某些后端不区分大小写，在其他后端区分大小写。对于保证不区分大小写的比较，请使用 ColumnOperators.ilike() .
+
+
+    ILIKE （不区分大小写，例如）：：
+    query.filter(User.name.ilike('%ed%'))
+    注解
+    大多数后端不直接支持iLike。对于那些 ColumnOperators.ilike() 运算符呈现一个表达式，该表达式与应用于每个操作数的下SQL函数组合在一起。
+
+    IN ：：
+    query.filter(User.name.in_(['ed', 'wendy', 'jack']))
+    # works with query objects too:
+    query.filter(User.name.in_(
+        session.query(User.name).filter(User.name.like('%ed%'))
+    ))
+
+    NOT IN ：：
+    query.filter(~User.name.in_(['ed', 'wendy', 'jack']))
+
+    IS NULL ：：
+    query.filter(User.name == None)
+    # alternatively, if pep8/linters are a concern
+    query.filter(User.name.is_(None))
+
+    IS NOT NULL ：：
+    query.filter(User.name != None)
+    # alternatively, if pep8/linters are a concern
+    query.filter(User.name.isnot(None))
+
+    AND ：：
+    # use and_()
+    from sqlalchemy import and_
+    query.filter(and_(User.name == 'ed', User.fullname == 'Ed Jones'))
+    # or send multiple expressions to .filter()
+    query.filter(User.name == 'ed', User.fullname == 'Ed Jones')
+    # or chain multiple filter()/filter_by() calls
+    query.filter(User.name == 'ed').filter(User.fullname == 'Ed Jones')
+    注解
+    确保使用 and_() 和 not Python and 接线员！
+
+    OR ：：
+    from sqlalchemy import or_
+    query.filter(or_(User.name == 'ed', User.name == 'wendy'))
+    注解
+    确保使用 or_() 和 not Python or 接线员！
+
+    MATCH ：：
+    query.filter(User.name.match('wendy'))
+    注解
+    match() 使用特定于数据库的 MATCH 或 CONTAINS 函数；其行为因后端而异，在某些后端（如sqlite）上不可用。
+
